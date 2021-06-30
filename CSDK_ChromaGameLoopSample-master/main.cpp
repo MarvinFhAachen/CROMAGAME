@@ -47,6 +47,7 @@ static int _sIndexSpiral = -1;
 // Function prototypes
 void Cleanup();
 void GameLoop();
+void Loop();
 int GetKeyColorIndex(int row, int column);
 void InputHandler();
 void Init();
@@ -280,6 +281,39 @@ int Thresh(int color1, int color2, int inputColor) {
 	}
 }
 
+int KeyByPos(int vert, int h) {
+	int ret = 0;
+
+	//row
+	switch (vert)
+	{
+	case 2: ret += 16; break;
+	case 3: ret += 22 + 16 ; break;
+	case 4: ret += 21 + 16 + 22 ; break;
+	case 5: ret += 18 + 16 + 22 +21; break;
+	case 6: ret += 19 + 16 + 22 + 21+ 18; break;
+	
+	default:
+		break;
+	}
+
+	ret += h;
+
+	//missing
+	if (ret >= 2) ret += 1;
+	if (ret >= 18) ret += 4;
+	if (ret >= 58) ret += 1;
+	if (ret >= 81) ret += 3;
+	if (ret >= 87) ret += 1;
+	if (ret >= 101) ret += 1;
+	if (ret >= 103) ret += 1;
+	if (ret >= 105) ret += 1;
+	if (ret >= 114) ret += 3;
+	if (ret >= 118) ret += 3;
+	if (ret >= 128) ret += 1;
+
+	return ret; 
+}
 
 void BlendAnimation1D(const FChromaSDKSceneEffect& effect, FChromaSDKDeviceFrameIndex& deviceFrameIndex, int device, EChromaSDKDevice1DEnum device1d, const char* animationName,
 	int* colors, int* tempColors)
@@ -507,6 +541,54 @@ void GameLoop()
 	delete[] tempColorsKeyboard;
 
 }
+//int i = 0;
+//int _i = 0;
+void Loop()
+{
+
+	const int sizeKeyboard = GetColorArraySize2D(EChromaSDKDevice2DEnum::DE_Keyboard);
+	int* colorsKeyboard = new int[sizeKeyboard];
+	int* tempColorsKeyboard = new int[sizeKeyboard];
+	
+	// start with a blank frame
+	SetStaticColor(colorsKeyboard, _sAmbientColor, sizeKeyboard);
+	//KA 
+	SetupAnimation2D(ANIMATION_FINAL_KEYBOARD, EChromaSDKDevice2DEnum::DE_Keyboard);
+
+	while (_sWaitForExit)
+	{
+		//if (_i != i) {
+		//	cout << i;
+		//	_i = i; 
+		//}
+		int vertival = 0;
+		int horizontal = 0;
+		cout << "y: ";
+		cin >> vertival;
+		cout << vertival << endl;
+		cout << "x: ";
+		cin >> horizontal;
+		cout << horizontal << endl;
+		cout << KeyByPos(vertival, horizontal);
+			int color = ChromaAnimationAPI::GetRGB(100, 100, 0);
+			SetKeyColor(colorsKeyboard, KeyByPos(vertival, horizontal), color);
+			ChromaAnimationAPI::UpdateFrameName(ANIMATION_FINAL_KEYBOARD, 0, 0.1f, colorsKeyboard, sizeKeyboard);
+			// display the change
+			ChromaAnimationAPI::PreviewFrameName(ANIMATION_FINAL_KEYBOARD, 0);
+	
+		
+
+
+
+		Sleep(33); //30 FPS
+
+	}
+
+
+	delete[] colorsKeyboard;
+	delete[] tempColorsKeyboard;
+
+}
 
 bool turn = false;
 void InputHandler()
@@ -521,9 +603,12 @@ void InputHandler()
 	HandleInput inputB = HandleInput('B');
 	HandleInput inputN = HandleInput('N');
 	HandleInput inputM = HandleInput('M');
+	HandleInput inputV = HandleInput('V');
 
 	while (_sWaitForExit)
 	{
+		//if (inputV.WasReleased())
+			//i += 1; 
 		if (inputT.WasReleased())
 		{
 			if(turn)
@@ -682,17 +767,9 @@ int main()
 	*/
 	Init();
 
-	thread thread(GameLoop);
-	cout << "Press `ESC` to Quit." << endl;
-	cout << "Press `C` to change base color." << endl;
-	cout << "Press `A` for ammo/health." << endl;
-	cout << "Press `H` to toggle hotkeys." << endl;
-	cout << "Press `F` for fire." << endl;
-	cout << "Press `L` for landscape." << endl;
-	cout << "Press `R` for rainbow." << endl;
-	cout << "Press `S` for spiral." << endl;
-
-	InputHandler();
+	//thread thread(GameLoop);
+	thread thread(Loop);
+	//InputHandler();
 
 	thread.join();
 	Cleanup();
