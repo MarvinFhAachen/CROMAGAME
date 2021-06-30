@@ -431,125 +431,72 @@ void BlendAnimation2D(const FChromaSDKSceneEffect& effect, FChromaSDKDeviceFrame
 }
 
 
-
+int keygamecolore[] = 
+			{ 0,0,0,
+				0,0,0,
+				0,0,0 };
 void GameLoop()
 {
 	
 	const int sizeKeyboard = GetColorArraySize2D(EChromaSDKDevice2DEnum::DE_Keyboard);
 	int* colorsKeyboard = new int[sizeKeyboard];
 	int* tempColorsKeyboard = new int[sizeKeyboard];
-	unsigned int timeMS = 0;
+	
 
 	while (_sWaitForExit)
 	{
 		// start with a blank frame
 		SetStaticColor(colorsKeyboard, _sAmbientColor, sizeKeyboard);
-
-		
-#if !USE_ARRAY_EFFECTS
-
-
+		//KA 
 		SetupAnimation2D(ANIMATION_FINAL_KEYBOARD, EChromaSDKDevice2DEnum::DE_Keyboard);
 
+		//Outline playfeeld
+		int keys[] = {
+			Keyboard::RZKEY::RZKEY_4,
+			Keyboard::RZKEY::RZKEY_5,
+			Keyboard::RZKEY::RZKEY_6,
+			Keyboard::RZKEY::RZKEY_7,
+			Keyboard::RZKEY::RZKEY_8,
+			Keyboard::RZKEY::RZKEY_R,
+			Keyboard::RZKEY::RZKEY_F,
+			Keyboard::RZKEY::RZKEY_V,
+			Keyboard::RZKEY::RZKEY_I,
+			Keyboard::RZKEY::RZKEY_K,
+			Keyboard::RZKEY::RZKEY_OEM_9,
+			Keyboard::RZKEY::RZKEY_SPACE
+		};
+		int keysLength = sizeof(keys) / sizeof(int);
+		for (int i = 0; i < keysLength; ++i) {
+			int color = ChromaAnimationAPI::GetRGB(100, 100, 0);	
+			int key = keys[i];
+			SetKeyColor(colorsKeyboard, key, color);
+		}
+
+		//xo game
+		int keysxo[] = {
+			Keyboard::RZKEY::RZKEY_T,
+			Keyboard::RZKEY::RZKEY_Y,
+			Keyboard::RZKEY::RZKEY_U,
+			Keyboard::RZKEY::RZKEY_G,
+			Keyboard::RZKEY::RZKEY_H,
+			Keyboard::RZKEY::RZKEY_J,
+			Keyboard::RZKEY::RZKEY_B,
+			Keyboard::RZKEY::RZKEY_N,
+			Keyboard::RZKEY::RZKEY_M
+		};
+		keysLength = sizeof(keygamecolore) / sizeof(int);
+		for (int i = 0; i < keysLength; ++i) {
+			int color = keygamecolore[i];
+			int key = keysxo[i];
+			SetKeyColor(colorsKeyboard, key, color);
+		}
 		
-#endif
-
-		if (_sAmmo)
-		{
-			// Show health animation
-			{
-				int keys[] = {
-					Keyboard::RZKEY::RZKEY_F1,
-					Keyboard::RZKEY::RZKEY_F2,
-					Keyboard::RZKEY::RZKEY_F3,
-					Keyboard::RZKEY::RZKEY_F4,
-					Keyboard::RZKEY::RZKEY_F5,
-					Keyboard::RZKEY::RZKEY_F6,
-				};
-				int keysLength = sizeof(keys) / sizeof(int);
-
-				float t = timeMS * 0.002f;
-				float hp = fabsf(cos(MATH_PI / 2.0f + t));
-				for (int i = 0; i < keysLength; ++i) {
-					int color;
-					if (((i + 1) / ((float)keysLength + 1)) < hp) {
-						color = ChromaAnimationAPI::GetRGB(0, 255, 0);
-					}
-					else {
-						color = ChromaAnimationAPI::GetRGB(0, 100, 0);
-					}
-					int key = keys[i];
-					SetKeyColor(colorsKeyboard, key, color);
-				}
-			}
-
-			// Show ammo animation
-			{
-				int keys[] = {
-					Keyboard::RZKEY::RZKEY_F7,
-					Keyboard::RZKEY::RZKEY_F8,
-					Keyboard::RZKEY::RZKEY_F9,
-					Keyboard::RZKEY::RZKEY_F10,
-					Keyboard::RZKEY::RZKEY_F11,
-					Keyboard::RZKEY::RZKEY_F12,
-				};
-				int keysLength = sizeof(keys) / sizeof(int);
-
-				float t = timeMS * 0.001f;
-				float hp = fabsf(cos(MATH_PI / 2.0f + t));
-				for (int i = 0; i < keysLength; ++i) {
-					int color;
-					if (((i + 1) / ((float)keysLength + 1)) < hp) {
-						color = ChromaAnimationAPI::GetRGB(255, 255, 0);
-					}
-					else {
-						color = ChromaAnimationAPI::GetRGB(100, 100, 0);
-					}
-					int key = keys[i];
-					SetKeyColor(colorsKeyboard, key, color);
-				}
-			}
-		}
-
-		if (_sHotkeys)
-		{
-			// Show hotkeys
-			SetKeyColorRGB(colorsKeyboard, (int)Keyboard::RZKEY::RZKEY_ESC, 255, 255, 0);
-			SetKeyColorRGB(colorsKeyboard, (int)Keyboard::RZKEY::RZKEY_W, 255, 0, 0);
-			SetKeyColorRGB(colorsKeyboard, (int)Keyboard::RZKEY::RZKEY_A, 255, 0, 0);
-			SetKeyColorRGB(colorsKeyboard, (int)Keyboard::RZKEY::RZKEY_S, 255, 0, 0);
-			SetKeyColorRGB(colorsKeyboard, (int)Keyboard::RZKEY::RZKEY_D, 255, 0, 0);
-			SetKeyColorRGB(colorsKeyboard, (int)Keyboard::RZKEY::RZKEY_C, 255, 0, 0);
-			SetKeyColorRGB(colorsKeyboard, (int)Keyboard::RZKEY::RZKEY_L, 255, 0, 0);
-			SetKeyColorRGB(colorsKeyboard, (int)Keyboard::RZKEY::RZKEY_R, 255, 0, 0);
-			SetKeyColorRGB(colorsKeyboard, (int)Keyboard::RZKEY::RZKEY_F, 255, 0, 0);
-
-			if (_sAmmo)
-			{
-				SetKeyColorRGB(colorsKeyboard, (int)Keyboard::RZKEY::RZKEY_A, 0, 255, 0);
-			}
-
-
-
-			if (_sHotkeys)
-			{
-				SetKeyColorRGB(colorsKeyboard, (int)Keyboard::RZKEY::RZKEY_H, 0, 255, 0);
-				SetKeyColorRGB(colorsKeyboard, (int)Keyboard::RZKEY::RZKEY_H, 255, 0, 0);
-			}
-		}
-
-#if USE_ARRAY_EFFECTS
-		ChromaAnimationAPI::SetCustomColorFlag2D((int)EChromaSDKDevice2DEnum::DE_Keyboard, colorsKeyboard);
-		ChromaAnimationAPI::SetEffectKeyboardCustom2D((int)EChromaSDKDevice2DEnum::DE_Keyboard, colorsKeyboard);
-
-#else
 		ChromaAnimationAPI::UpdateFrameName(ANIMATION_FINAL_KEYBOARD, 0, 0.1f, colorsKeyboard, sizeKeyboard);
-
 		// display the change
 		ChromaAnimationAPI::PreviewFrameName(ANIMATION_FINAL_KEYBOARD, 0);
-#endif
+
 		Sleep(33); //30 FPS
-		timeMS += 33;
+		
 	}
 	
 
@@ -558,59 +505,116 @@ void GameLoop()
 
 }
 
+bool turn = false;
 void InputHandler()
 {
-	HandleInput inputLControl = HandleInput(VK_LCONTROL);
-	HandleInput inputEscape = HandleInput(VK_ESCAPE);
-	HandleInput inputA = HandleInput('A');
-	HandleInput inputC = HandleInput('C');
+	HandleInput esc = HandleInput(VK_ESCAPE);
+	HandleInput inputT = HandleInput('T');
+	HandleInput inputZ = HandleInput('Z');
+	HandleInput inputU = HandleInput('U');
+	HandleInput inputG = HandleInput('G');
 	HandleInput inputH = HandleInput('H');
-	HandleInput inputL = HandleInput('L');
-	HandleInput inputF = HandleInput('F');
-	HandleInput inputR = HandleInput('R');
-	HandleInput inputS = HandleInput('S');
+	HandleInput inputJ = HandleInput('J');
+	HandleInput inputB = HandleInput('B');
+	HandleInput inputN = HandleInput('N');
+	HandleInput inputM = HandleInput('M');
 
 	while (_sWaitForExit)
 	{
-		if (inputLControl.WasReleased())
+		if (inputT.WasReleased())
 		{
-			cout << "Left Control was pressed!" << endl;
+			if(turn)
+				keygamecolore[0] = ChromaAnimationAPI::GetRGB(0, 255, 0);
+			else
+				keygamecolore[0] = ChromaAnimationAPI::GetRGB(0, 0, 255);
+
+			turn = !turn;
 		}
-		if (inputEscape.WasReleased())
+		if (inputZ.WasReleased())
 		{
-			_sWaitForExit = false;
+			if (turn)
+				keygamecolore[1] = ChromaAnimationAPI::GetRGB(0, 255, 0);
+			else
+				keygamecolore[1] = ChromaAnimationAPI::GetRGB(0, 0, 255);
+
+			turn = !turn;
 		}
-		if (inputA.WasReleased())
+		if (inputU.WasReleased())
 		{
-			_sAmmo = !_sAmmo;
+			if (turn)
+				keygamecolore[2] = ChromaAnimationAPI::GetRGB(0, 255, 0);
+			else
+				keygamecolore[2] = ChromaAnimationAPI::GetRGB(0, 0, 255);
+
+			turn = !turn;
+		}
+		if (inputG.WasReleased())
+		{
+			if (turn)
+				keygamecolore[3] = ChromaAnimationAPI::GetRGB(0, 255, 0);
+			else
+				keygamecolore[3] = ChromaAnimationAPI::GetRGB(0, 0, 255);
+
+			turn = !turn;
 		}
 		if (inputH.WasReleased())
 		{
-			_sHotkeys = !_sHotkeys;
+			if (turn)
+				keygamecolore[4] = ChromaAnimationAPI::GetRGB(0, 255, 0);
+			else
+				keygamecolore[4] = ChromaAnimationAPI::GetRGB(0, 0, 255);
+
+			turn = !turn;
 		}
-		if (inputC.WasReleased())
+		if (inputJ.WasReleased())
 		{
-			_sAmbientColor = ChromaAnimationAPI::GetRGB(rand() % 256, rand() % 256, rand() % 256);
+			if (turn)
+				keygamecolore[5] = ChromaAnimationAPI::GetRGB(0, 255, 0);
+			else
+				keygamecolore[5] = ChromaAnimationAPI::GetRGB(0, 0, 255);
+
+			turn = !turn;
 		}
-		if (inputF.WasReleased())
+		if (inputB.WasReleased())
 		{
-			_sScene.ToggleState(_sIndexFire);
-			_sAmbientColor = 0;
+			if (turn)
+				keygamecolore[6] = ChromaAnimationAPI::GetRGB(0, 255, 0);
+			else
+				keygamecolore[6] = ChromaAnimationAPI::GetRGB(0, 0, 255);
+
+			turn = !turn;
 		}
-		if (inputL.WasReleased())
+		if (inputN.WasReleased())
 		{
-			_sScene.ToggleState(_sIndexLandscape);
-			_sAmbientColor = 0;
+			if (turn)
+				keygamecolore[7] = ChromaAnimationAPI::GetRGB(0, 255, 0);
+			else
+				keygamecolore[7] = ChromaAnimationAPI::GetRGB(0, 0, 255);
+
+			turn = !turn;
 		}
-		if (inputR.WasReleased())
+		if (inputM.WasReleased())
 		{
-			_sScene.ToggleState(_sIndexRainbow);
-			_sAmbientColor = 0;
+			if (turn)
+				keygamecolore[8] = ChromaAnimationAPI::GetRGB(0, 255, 0);
+			else
+				keygamecolore[8] = ChromaAnimationAPI::GetRGB(0, 0, 255);
+
+			turn = !turn;
 		}
-		if (inputS.WasReleased())
+		if (esc.WasReleased())
 		{
-			_sScene.ToggleState(_sIndexSpiral);
-			_sAmbientColor = 0;
+			keygamecolore[0] = ChromaAnimationAPI::GetRGB(0, 0, 0);
+			keygamecolore[1] = ChromaAnimationAPI::GetRGB(0, 0, 0);
+			keygamecolore[2] = ChromaAnimationAPI::GetRGB(0, 0, 0);
+			keygamecolore[3] = ChromaAnimationAPI::GetRGB(0, 0, 0);
+			keygamecolore[4] = ChromaAnimationAPI::GetRGB(0, 0, 0);
+			keygamecolore[5] = ChromaAnimationAPI::GetRGB(0, 0, 0);
+			keygamecolore[6] = ChromaAnimationAPI::GetRGB(0, 0, 0);
+			keygamecolore[7] = ChromaAnimationAPI::GetRGB(0, 0, 0);
+			keygamecolore[8] = ChromaAnimationAPI::GetRGB(0, 0, 0);
+
+			turn = !turn;
 		}
 
 		Sleep(1);
