@@ -479,105 +479,53 @@ struct enemy
 	int y = 2;
 	bool alive = false;
 }enemy;
-bool _shoot = false;
-
-
-int _round = 0;
-int hit[]{
-			0,0,0,
-			0,0,0,
-			0,0,0,
-			0,0,0
-};
+bool shoot = false;
 void mygameloop() {
 	
 
-	int color_r = ChromaAnimationAPI::GetRGB(255, 0, 0);
-	int color_g = ChromaAnimationAPI::GetRGB(0, 255, 0);
-	int color_b = ChromaAnimationAPI::GetRGB(0, 0, 255);
-
-	int color_pp = ChromaAnimationAPI::GetRGB(0, 100, 200);
+	int color_pp = ChromaAnimationAPI::GetRGB(100, 100, 0);
 	int color_enemy = ChromaAnimationAPI::GetRGB(100, 100, 0);
-	int color_fire = ChromaAnimationAPI::GetRGB(255, 0, 0);
 	const int sizeKeyboard = GetColorArraySize2D(EChromaSDKDevice2DEnum::DE_Keyboard);
 	int* colorsKeyboard = new int[sizeKeyboard];
 	int* tempColorsKeyboard = new int[sizeKeyboard];
-	unsigned int _time = 0; 
-	unsigned int _temp_enemy = 0; 
-	unsigned int _temp_fire = 0; 
+	//unsigned int _time = 0; 
+	unsigned int _delta_time = 0; 
 
-	Sleep(100);
 
-	while (true)
+
+	while (_sWaitForExit)
 	{
-
-			
-		while (_round < 12)
-		{
-			
-			// start with a blank frame
-			SetStaticColor(colorsKeyboard, _sAmbientColor, sizeKeyboard);
-			SetupAnimation2D(ANIMATION_FINAL_KEYBOARD, EChromaSDKDevice2DEnum::DE_Keyboard);
-
-			//draw player
-
-			SetKeyColor(colorsKeyboard, KeyByPos(pp.y, pp.x), color_pp);
-			SetKeyColor(colorsKeyboard, KeyByPos(1, _round+2), color_pp);
-
-			//draw points
-			for (int i = 0; i < 12; i++)
-			{
-				if(hit[i]==0)
-					SetKeyColor(colorsKeyboard, KeyByPos(1, i + 2), ChromaAnimationAPI::GetRGB(0, 0, 0));
-				else if (hit[i] == 1)
-					SetKeyColor(colorsKeyboard, KeyByPos(1, i + 2), color_g);
-				else if (hit[i] == 2)
-					SetKeyColor(colorsKeyboard, KeyByPos(1, i + 2), color_r);
-			}
-
-			//draw enemy
-			if (_time > _temp_enemy + 33) {
-				if (enemy.alive == true)
-					hit[_round - 1] = 2;
-				//random
-				int randNum = rand() % (13 - 2 + 1) + 2;
-				enemy.x = randNum;
-				_temp_enemy = _time;
-				enemy.alive = true;
-				_round++;
-			}
-			SetKeyColor(colorsKeyboard, KeyByPos(enemy.y, enemy.x), color_enemy);
-
-
-
-
-
-			//shoot ?
-			if (_shoot == true) {
-				_shoot = false;
-				_temp_fire = _time;
-				//draw fire
-				SetKeyColor(colorsKeyboard, KeyByPos(pp.y - 1, pp.x), color_fire);
-				SetKeyColor(colorsKeyboard, KeyByPos(pp.y - 2, pp.x), color_fire);
-				SetKeyColor(colorsKeyboard, KeyByPos(pp.y - 3, pp.x), color_fire);
-
-				//enemy getroffen ?
-				if (pp.x == enemy.x && enemy.alive) {
-					enemy.alive = false;
-					hit[_round] = 1;
-					SetKeyColor(colorsKeyboard, KeyByPos(pp.y - 3, pp.x), ChromaAnimationAPI::GetRGB(255, 255, 255));
-				}
-
-
-			}
-
-			ChromaAnimationAPI::UpdateFrameName(ANIMATION_FINAL_KEYBOARD, 0, 0.1f, colorsKeyboard, sizeKeyboard);
-			ChromaAnimationAPI::PreviewFrameName(ANIMATION_FINAL_KEYBOARD, 0);
-			Sleep(33); //30 FPS
-			_time = _time + 1;
-
+		// start with a blank frame
+		SetStaticColor(colorsKeyboard, _sAmbientColor, sizeKeyboard);
+		SetupAnimation2D(ANIMATION_FINAL_KEYBOARD, EChromaSDKDevice2DEnum::DE_Keyboard);
+	
+		//draw player
+		
+		SetKeyColor(colorsKeyboard, KeyByPos(pp.y, pp.x), color_pp);
+	
+		//draw enemy
+		if (_delta_time>33) {
+			//random
+			int randNum = rand() % (13 - 2 + 1) + 2;
+			enemy.x = randNum;
+			_delta_time = 0; 
 		}
+		SetKeyColor(colorsKeyboard, KeyByPos(enemy.y, enemy.x), color_enemy);
+		
+		
+		
+		//enemy getroffen ? 
+
+		//shoot ?
+
+
+		ChromaAnimationAPI::UpdateFrameName(ANIMATION_FINAL_KEYBOARD, 0, 0.1f, colorsKeyboard, sizeKeyboard);
+		ChromaAnimationAPI::PreviewFrameName(ANIMATION_FINAL_KEYBOARD, 0);
+		Sleep(33); //30 FPS
+		//_time = _time + 1;
+		_delta_time = _delta_time + 1;
 	}
+
 	delete[] colorsKeyboard;
 	delete[] tempColorsKeyboard;
 }
@@ -605,25 +553,20 @@ void InputHandler()
 		else if (UP.WasReleased()) {
 			upaccept = true;
 		}
-		if (SPACE._mWasPressed && spaceaccept) {
+		if (LEFT._mWasPressed && spaceaccept) {
 			spaceaccept = false;
-			_round = 0;
-			for (int i = 0; i < 12; i++)
-			{
-				hit[i] = 0;
-			}
+			//what to do 
 		}
-		else if (SPACE.WasReleased()) {
+		else if (LEFT.WasReleased()) {
 			spaceaccept = true;
 		}
-		
+		//if (inputV.WasReleased())
+			//i += 1; 
 		if ( LEFT._mWasPressed && leftaccept && pp.x >2 ){
 			leftaccept = false;
 			pp.x -= 1;
-
 		}
 		else if (LEFT.WasReleased()) {
-			
 			leftaccept = true;
 		}
 
@@ -632,7 +575,6 @@ void InputHandler()
 			pp.x += 1;
 		}
 		else if (RIGHT.WasReleased()) {
-			
 			rightaccept = true;
 		}
 
